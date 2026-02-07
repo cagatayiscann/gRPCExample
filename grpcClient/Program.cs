@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using Grpc.Net.Client;
 using grpcMessageClient;
 using grpcServer;
@@ -35,20 +36,47 @@ namespace grpcClient
             // }
 
             // Client Streaming
+            // var request = messageClient.SendMessage();
+            // for (int i = 0; i < 10; i++)
+            // {
+            //     await Task.Delay(1000);
+            //     await request.RequestStream.WriteAsync(new MessageRequest
+            //     {
+            //         Name = "Çağatay",
+            //         Message = "Virüs yükleniyor %" + (i+1)*10
+            //     });
+            // }
+            // await request.RequestStream.CompleteAsync();
+            // System.Console.WriteLine((await request.ResponseAsync).Message);
+
+            // Bi directional streaming
             var request = messageClient.SendMessage();
-            for (int i = 0; i < 10; i++)
+            var sendTask = Task.Run(async () =>
             {
-                await Task.Delay(1000);
-                await request.RequestStream.WriteAsync(new MessageRequest
+                for (int i = 0; i < 10; i++)
                 {
-                    Name = "Çağatay",
-                    Message = "Virüs yükleniyor %" + (i+1)*10
-                });
+                    await request.RequestStream.WriteAsync(
+                        new MessageRequest
+                        {
+                            Name = "Çağatay",
+                            Message = "Cooldown % " + (10 - i) * 10
+                        }
+                    );
+
+                    await Task.Delay(1000);
+                }
+
+                await request.RequestStream.CompleteAsync();
+            });
+
+            CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+            while (await request.ResponseStream.MoveNext(cancellationTokenSource.Token))
+            {
+                Console.WriteLine(request.ResponseStream.Current.Message);
             }
 
-            await request.RequestStream.CompleteAsync();
+            await sendTask;
 
-            System.Console.WriteLine((await request.ResponseAsync).Message);
 
             // var greetClient = new Greeter.GreeterClient(channel);
 
