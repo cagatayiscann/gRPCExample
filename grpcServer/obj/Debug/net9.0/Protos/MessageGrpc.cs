@@ -52,7 +52,7 @@ namespace messageServer {
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Method<global::messageServer.MessageRequest, global::messageServer.MessageResponse> __Method_SendMessage = new grpc::Method<global::messageServer.MessageRequest, global::messageServer.MessageResponse>(
-        grpc::MethodType.Unary,
+        grpc::MethodType.ServerStreaming,
         __ServiceName,
         "SendMessage",
         __Marshaller_message_MessageRequest,
@@ -69,7 +69,7 @@ namespace messageServer {
     public abstract partial class MessageBase
     {
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual global::System.Threading.Tasks.Task<global::messageServer.MessageResponse> SendMessage(global::messageServer.MessageRequest request, grpc::ServerCallContext context)
+      public virtual global::System.Threading.Tasks.Task SendMessage(global::messageServer.MessageRequest request, grpc::IServerStreamWriter<global::messageServer.MessageResponse> responseStream, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
@@ -92,7 +92,7 @@ namespace messageServer {
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     public static void BindService(grpc::ServiceBinderBase serviceBinder, MessageBase serviceImpl)
     {
-      serviceBinder.AddMethod(__Method_SendMessage, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::messageServer.MessageRequest, global::messageServer.MessageResponse>(serviceImpl.SendMessage));
+      serviceBinder.AddMethod(__Method_SendMessage, serviceImpl == null ? null : new grpc::ServerStreamingServerMethod<global::messageServer.MessageRequest, global::messageServer.MessageResponse>(serviceImpl.SendMessage));
     }
 
   }
